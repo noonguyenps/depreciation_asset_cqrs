@@ -4,7 +4,6 @@ import com.example.dto.request.DepreciationRequest;
 import com.example.mapping.DepreciationHistoryMapping;
 import com.example.mapping.DepreciationMapping;
 import com.example.model.Depreciation;
-import com.example.service.DepreciationHistoryService;
 import com.example.service.DepreciationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

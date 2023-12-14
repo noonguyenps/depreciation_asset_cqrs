@@ -20,30 +20,9 @@ public class DepreciationHistoryServiceImpl implements DepreciationHistoryServic
         if(event.getEventType().equals("CreateHistoryDepreciation"))
            depreciationHistoryRepository.save(event.getDepreciationHistory());
     }
-
-    @Override
-    public boolean saveDepreciationHistory(DepreciationHistory depreciationHistory) {
-        depreciationHistoryRepository.save(depreciationHistory);
-        return true;
-    }
     @Override
     public List<DepreciationHistory> findByDepreciation(Depreciation depreciation){
         return depreciationHistoryRepository.findByDepreciation(depreciation);
-    }
-
-    @Override
-    public List<Object> getDepreciationValue(int month, int year) {
-        return depreciationHistoryRepository.getAssetDepreciationHistory(month,year);
-    }
-
-    @Override
-    public Object getValueByMonthAndYearAndAsset(int mont, int year, Long assetId) {
-        return depreciationHistoryRepository.getValueByMonthAndValueAndId(mont, year, assetId);
-    }
-
-    @Override
-    public List<Object> getValueByYear(int year, Long assetId) {
-        return depreciationHistoryRepository.getValueByYearAndId(year, assetId);
     }
 
     @Override
@@ -73,18 +52,8 @@ public class DepreciationHistoryServiceImpl implements DepreciationHistoryServic
     }
 
     @Override
-    public Double totalValueDepreciationByAssetId(Long assetId) {
-        return depreciationHistoryRepository.totalValueDepreciationByAssetId(assetId);
-    }
-
-    @Override
     public Double totalValueDepreciationByAssetId(Long assetId, int month, int year) {
         return depreciationHistoryRepository.totalValueDepreciationByAssetId(assetId, month, year);
-    }
-
-    @Override
-    public Double totalValueDepreciationByDepreciationId(Long depreciationId, int month, int year) {
-        return depreciationHistoryRepository.totalValueDepreciationByDepreciationId(depreciationId, month, year);
     }
 
     @Override

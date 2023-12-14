@@ -11,8 +11,5 @@ import java.util.List;
 @Component
 @Service
 public interface DepreciationService {
-
     List<Depreciation> findByAssetIdOrderByIdAsc(Long assetId);
-
-    List<Depreciation> getDepreciationByFromDateAndToDate(Date fromDate, Date toDate);
 }

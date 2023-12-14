@@ -22,10 +22,6 @@ public class DepreciationServiceImpl implements DepreciationService {
     public List<Depreciation> findByAssetIdOrderByIdAsc(Long assetId) {
         return depreciationRepository.findByAssetIdOrderByIdAsc(assetId);
     }
-    @Override
-    public List<Depreciation> getDepreciationByFromDateAndToDate(Date fromDate, Date toDate) {
-        return depreciationRepository.getDepreciationByFromDateAndToDate(fromDate,toDate);
-    }
 
     @KafkaListener(topics = "depreciation-event-topic",groupId = "depreciation-event-group")
     public void processDepreciationEvents(DepreciationEvent depreciationEvent) {

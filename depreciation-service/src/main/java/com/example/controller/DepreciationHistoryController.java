@@ -17,10 +17,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DepreciationHistoryController {
     private final DepreciationHistoryTask depreciationHistoryTask;
-    //Tất cả thông tin khấu hao của phòng ban
+    //Thêm thông tin lịch sử khấu hao trong tháng cho
     @PostMapping("/test")
     public ResponseEntity getTest(@RequestParam String text) throws ParseException {
         depreciationHistoryTask.calculateDepreciationPerMonthTest(text);
-        return new ResponseEntity("Tính khấu hao thánh công",HttpStatus.OK);
+        return new ResponseEntity("Tính khấu hao thành công",HttpStatus.OK);
     }
 }
