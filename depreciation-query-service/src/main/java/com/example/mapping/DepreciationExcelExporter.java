@@ -15,7 +15,7 @@ public class DepreciationExcelExporter {
     private XSSFWorkbook workbook;
     private XSSFSheet sheet;
     private List<DepreciationDeptResponse> list;
-    private static CellStyle cellStyleFormatNumber = null;
+//    private static CellStyle cellStyleFormatNumber = null;
     public static final int COLUMN_INDEX_TYPE       = 0;
     public static final int COLUMN_INDEX_PREV       = 1;
     public static final int COLUMN_INDEX_MONTH_1    = 2;
@@ -150,7 +150,7 @@ public class DepreciationExcelExporter {
         for(int i =0 ; i<20;i++)
             sheet.autoSizeColumn(i);
     }
-    private static void writeData(List<DepreciationDeptResponse> list, Sheet sheet) {
+    private void writeData(List<DepreciationDeptResponse> list, Sheet sheet) {
         int i = 1;
         for(DepreciationDeptResponse response : list){
             Row row = sheet.createRow(i);
@@ -198,16 +198,13 @@ public class DepreciationExcelExporter {
         }
     }
 
-    private static void createCell(Row row, String col0,Double col1,Double col2, Double col3, Double col4, Double col5, Double col6,
+    private void createCell(Row row, String col0,Double col1,Double col2, Double col3, Double col4, Double col5, Double col6,
                             Double col7, Double col8, Double col9, Double col10, Double col11, Double col12, Double col13, Double col14,
                             Double col15, Double col16, Double col17, Double col18) {
+
+        CellStyle cellStyleFormatNumber = null;
         if (cellStyleFormatNumber == null) {
-            // Format number
             short format = (short)BuiltinFormats.getBuiltinFormat("#,##0");
-            // DataFormat df = workbook.createDataFormat();
-            // short format = df.getFormat("#,##0");
-            //Create CellStyle
-            Workbook workbook = row.getSheet().getWorkbook();
             cellStyleFormatNumber = workbook.createCellStyle();
             cellStyleFormatNumber.setDataFormat(format);
         }

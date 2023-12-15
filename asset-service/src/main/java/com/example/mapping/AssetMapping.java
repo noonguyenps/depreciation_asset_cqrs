@@ -50,6 +50,8 @@ public class AssetMapping {
         switch (Math.toIntExact(asset.getAssetStatus())){
             case 0: assetResponse.setStatusName("Chưa sử dụng");break;
             case 1: assetResponse.setStatusName("Đang sử dụng");break;
+            case 2: assetResponse.setStatusName("Đã thanh lý");break;
+            case 3: assetResponse.setStatusName("Đã mất");break;
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         assetResponse.setDateInStored(dateFormat.format(asset.getDateInStored()));
@@ -67,6 +69,7 @@ public class AssetMapping {
         assetResponse.setAssetStorageId(asset.getStorageId());
         assetResponse.setAssetStorageName(storage.getStorageName());
         assetResponse.setAccessaries(accesaryService.findByAssetId(asset.getAssetId()));
+        assetResponse.setActive(asset.isActive());
         if(asset.getUserUsedId()!=null){
             assetResponse.setUser(assetServiceClient.fetchUser(Long.valueOf(asset.getUserUsedId())));
         }
@@ -89,6 +92,7 @@ public class AssetMapping {
         asset.setBrandId(assetRequest.getBrandId());
         asset.setStorageId(assetRequest.getStorageId());
         asset.setAssetImage(asset.getAssetImage());
+        asset.setActive(true);
         return asset;
     }
     //Thay đổi thông tin người sử dụng tài sản
