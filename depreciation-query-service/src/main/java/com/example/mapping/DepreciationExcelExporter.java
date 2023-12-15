@@ -15,7 +15,6 @@ public class DepreciationExcelExporter {
     private XSSFWorkbook workbook;
     private XSSFSheet sheet;
     private List<DepreciationDeptResponse> list;
-//    private static CellStyle cellStyleFormatNumber = null;
     public static final int COLUMN_INDEX_TYPE       = 0;
     public static final int COLUMN_INDEX_PREV       = 1;
     public static final int COLUMN_INDEX_MONTH_1    = 2;
