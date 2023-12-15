@@ -252,7 +252,7 @@ public class AssetController {
     public ResponseEntity getAssetDelivery(@PathVariable Long id){
         return new ResponseEntity(assetMapping.getAssetDeliveryResponse(assetService.findAssetById(id)),HttpStatus.OK);
     }
-    //Lấy danh ssách nâng cấp tài sản
+    //Lấy danh sách nâng cấp tài sản
     @GetMapping("/update/{id}")
     public ResponseEntity getAllUpdateHistory(@PathVariable Long id) throws ParseException {
         Asset asset = assetService.findAssetById(id);

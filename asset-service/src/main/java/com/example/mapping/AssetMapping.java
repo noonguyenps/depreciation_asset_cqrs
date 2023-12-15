@@ -240,7 +240,7 @@ public class AssetMapping {
             brokenHistory.setNote(assetDelivery.getNote());
             UserResponse userResponse = assetServiceClient.fetchUser(assetDelivery.getUserId());
             brokenHistory.setUserResponse(userResponse);
-            brokenHistory.setDeliveryType("Mất");
+            brokenHistory.setDeliveryType("Thanh lý");
             brokenHistory.setStatus(assetDelivery.getStatus());
             brokenHistory.setNote(assetDelivery.getNote());
             listBroken.add(brokenHistory);

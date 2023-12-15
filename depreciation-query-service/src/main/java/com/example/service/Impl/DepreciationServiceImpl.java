@@ -31,9 +31,9 @@ public class DepreciationServiceImpl implements DepreciationService {
             Optional<Depreciation> depreciation = depreciationRepository.findById(depreciationEvent.getDepreciation().getId());
             if(depreciation.isPresent()){
                 Depreciation depreciationTemp = depreciation.get();
-                depreciationTemp.setAmountMonth(depreciationTemp.getAmountMonth());
-                depreciationTemp.setValueDepreciation(depreciationTemp.getValueDepreciation());
-                depreciationTemp.setToDate(depreciationTemp.getToDate());
+                depreciationTemp.setAmountMonth(depreciationEvent.getDepreciation().getAmountMonth());
+                depreciationTemp.setValueDepreciation(depreciationEvent.getDepreciation().getValueDepreciation());
+                depreciationTemp.setToDate(depreciationEvent.getDepreciation().getToDate());
                 depreciationRepository.save(depreciationTemp);
             }
         }

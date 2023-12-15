@@ -21,7 +21,6 @@
         <module>asset-service</module>
         <module>depreciation-service</module>
         <module>depreciation-query-service</module>
-        <!--        <module>asset-command-service</module>-->
     </modules>
 
     <properties>

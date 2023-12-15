@@ -29,7 +29,8 @@ public class DepreciationMapping {
         LocalDate localDate = LocalDate.now();
         int amountDate = 0;
         Double valuePre = 0.0;
-        Double valuePrev = depreciationHistoryService.totalValueDepreciationByAssetId(assetId,new Date().getMonth()+1, new Date().getYear()+1900);
+        Double valueTemp = depreciationHistoryService.totalValueDepreciationByAssetId(assetId,new Date().getMonth()+1, new Date().getYear()+1900);
+        Double valuePrev = valueTemp == null ? 0.0 : valueTemp;
         //Khởi tạo ngày đầu tháng và hôm nay
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date sDate = dateFormat.parse(localDate.getYear()+"-"+localDate.getMonthValue()+"-01");

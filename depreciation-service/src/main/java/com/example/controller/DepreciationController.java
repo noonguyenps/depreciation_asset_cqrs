@@ -35,7 +35,7 @@ public class DepreciationController {
     }
 
     //API Thực hiện tính toán và ngưng khấu hao
-    @PutMapping("/recall/{id}")
+    @PostMapping("/recall/{id}")
     public ResponseEntity updateDepreciation(@PathVariable Long id) throws ParseException {
         Depreciation depreciation = depreciationService.findDepreciationToUpdate(id);
         if(depreciation == null)
