@@ -33,4 +33,6 @@ public class AssetDelivery {
     private String note;
     @Column(name="create_at")
     private Date createAt;
+    @Column(name ="active")
+    private boolean active = true;
 }

@@ -115,7 +115,7 @@ public class AssetMapping {
         depreciationRequest.setDeptId(Long.valueOf(userResponse.getDept().getId()));
         depreciationRequest.setUserId(userResponse.getId());
         //Tạo thông tin khấu hao
-        assetServiceClient.addDepreciation(depreciationRequest);
+//        assetServiceClient.addDepreciation(depreciationRequest);
         //Tạo thông tin bàn giao
         AssetDelivery assetDelivery = new AssetDelivery();
         assetDelivery.setAssetId(asset.getAssetId());
@@ -131,26 +131,21 @@ public class AssetMapping {
     }
     //Thu hồi tài sản
     public Asset recallAsset(Asset asset, String note){
-        //Nếu dừng khấu hao thành công thì trả về asset đã xóa người dùng
-        if(assetServiceClient.recallAsset(asset.getAssetId())){
-            //Tạo thông tin bàn giao
-            AssetDelivery assetDelivery = new AssetDelivery();
-            assetDelivery.setAssetId(asset.getAssetId());
-            assetDelivery.setDeliveryType(1);
-            assetDelivery.setUserCreateId(Long.valueOf(10));
-            assetDelivery.setNote(note);
-            assetDelivery.setStatus(asset.getAssetStatus());
-            UserResponse userResponse = assetServiceClient.fetchUser(asset.getUserUsedId());
-            assetDelivery.setDeptId(Long.valueOf(userResponse.getDept().getId()));
-            assetDelivery.setUserId(Long.valueOf(userResponse.getId()));
-            assetDelivery.setCreateAt(new Date());
-            assetDeliveryService.createDelivery(assetDelivery);
-            asset.setAssetStatus(Long.valueOf(2));
-            asset.setUserUsedId(null);
-            asset.setDeptUsedId(null);
-            return asset;
-        }
-        return null;
+        AssetDelivery assetDelivery = new AssetDelivery();
+        assetDelivery.setAssetId(asset.getAssetId());
+        assetDelivery.setDeliveryType(1);
+        assetDelivery.setUserCreateId(Long.valueOf(10));
+        assetDelivery.setNote(note);
+        assetDelivery.setStatus(asset.getAssetStatus());
+        UserResponse userResponse = assetServiceClient.fetchUser(asset.getUserUsedId());
+        assetDelivery.setDeptId(Long.valueOf(userResponse.getDept().getId()));
+        assetDelivery.setUserId(Long.valueOf(userResponse.getId()));
+        assetDelivery.setCreateAt(new Date());
+        assetDeliveryService.createDelivery(assetDelivery);
+        asset.setAssetStatus(Long.valueOf(2));
+        asset.setUserUsedId(null);
+        asset.setDeptUsedId(null);
+        return asset;
     }
     public Double calculatorDepreciation(Asset asset, String fromDate, String toDate, Double value, String lastDate) throws ParseException {
         //Lấy thông tin tài sản và thời gian

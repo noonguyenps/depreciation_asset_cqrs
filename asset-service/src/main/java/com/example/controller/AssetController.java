@@ -214,7 +214,7 @@ public class AssetController {
         if(asset.getUserUsedId() != null) return new ResponseEntity<>(new Response("Tài sản đang được sử dụng",null),HttpStatus.NOT_FOUND);
         asset = assetMapping.deliveryAsset(asset,deliveryRequest);
         if(asset == null) return new ResponseEntity<>(new Response("Bàn giao tài sản thất bại",null),HttpStatus.NOT_FOUND);
-        assetService.createAsset(asset);
+        assetService.addUserAsset(asset);
         return new ResponseEntity<>(new Response("Cập nhật thông tin thành công",null),HttpStatus.OK);
     }
     //Thu hồi tài sản
@@ -225,7 +225,7 @@ public class AssetController {
         if(asset.getUserUsedId() == null) return new ResponseEntity<>(new Response("Tài sản chưa được đưa vào sử dụng",null),HttpStatus.NOT_FOUND);
         asset = assetMapping.recallAsset(asset,note);
         if(asset == null) return new ResponseEntity<>(new Response("Thu hồi tài sản thất bại",null),HttpStatus.NOT_FOUND);
-        assetService.createAsset(asset);
+        assetService.recallAsset(asset);
         return new ResponseEntity<>(new Response("Cập nhật thông tin thành công",null),HttpStatus.OK);
     }
     //Thực hiện nâng cấp tài sản
