@@ -6,6 +6,7 @@ import com.example.dto.response.DepartmentResponse;
 import com.example.dto.response.UserResponse;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 @NoArgsConstructor
 public class DepreciationServiceClient {
     @Autowired
+    @LoadBalanced
     private RestTemplate template;
 
     public AssetResponse fetchAsset(Long assetId) {

@@ -3,13 +3,14 @@ package com.example.client;
 import com.example.dto.request.DepreciationRequest;
 import com.example.dto.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
 public class AssetServiceClient {
-
     @Autowired
+//    @LoadBalanced
     private RestTemplate template;
 
     public UserResponse fetchUser(Long userId) {

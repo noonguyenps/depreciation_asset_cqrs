@@ -207,7 +207,8 @@ public class AssetMapping {
         if(asset.getUserUsedId() != null){
             assetDeliveryResponse.setUserResponse(assetServiceClient.fetchUser(asset.getUserUsedId()));
         }
-        assetDeliveryResponse.setDateUsed(dateFormat.format(asset.getDateUsed()));
+        if(asset.getDateUsed() != null)
+            assetDeliveryResponse.setDateUsed(dateFormat.format(asset.getDateUsed()));
         assetDeliveryResponse.setDateInStored(dateFormat.format(asset.getDateInStored()));
         List<AssetDeliveryResponse.DeliveryHistory> listDelivery = new ArrayList<>();
         List<AssetDeliveryResponse.DeliveryHistory> listBroken = new ArrayList<>();

@@ -30,6 +30,8 @@ public class DepreciationController {
     @GetMapping("/asset/{id}")
     public ResponseEntity getDepreciationByAssetId(@PathVariable Long id) throws ParseException {
         List<Depreciation> depreciationList =  depreciationService.findByAssetIdOrderByIdAsc(id);
+        if(depreciationList.size()==0)
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         DepreciationByAssetResponse depreciation = depreciationMapping.getDepreciationAssetResponse(id,depreciationList);
         return new ResponseEntity(depreciation,HttpStatus.OK);
     }

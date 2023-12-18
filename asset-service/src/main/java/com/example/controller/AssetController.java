@@ -250,13 +250,18 @@ public class AssetController {
     //Lấy danh sách bàn giao tài sản
     @GetMapping("/delivery/{id}")
     public ResponseEntity getAssetDelivery(@PathVariable Long id){
-        return new ResponseEntity(assetMapping.getAssetDeliveryResponse(assetService.findAssetById(id)),HttpStatus.OK);
+        Asset asset = assetService.findAssetById(id);
+        if(asset.getDateUsed() == null)
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        return new ResponseEntity(assetMapping.getAssetDeliveryResponse(asset),HttpStatus.OK);
     }
     //Lấy danh sách nâng cấp tài sản
     @GetMapping("/update/{id}")
     public ResponseEntity getAllUpdateHistory(@PathVariable Long id) throws ParseException {
         Asset asset = assetService.findAssetById(id);
         List<UpdateHistory> histories = updateHistoryService.getListUpdateHistoryByAssetId(id);
+        if(histories.size()== 0)
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         return new ResponseEntity(assetMapping.getAssetUpdateHistoryResponse(asset,histories),HttpStatus.OK);
     }
     //Lấy danh sách giảm tài sản
