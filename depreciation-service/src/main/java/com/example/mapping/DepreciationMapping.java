@@ -54,91 +54,81 @@ public class DepreciationMapping {
     }
 
     public Depreciation updateDepreciation(Depreciation depreciation) throws ParseException {
-        //Ngày hôm nay
-        Date endDate = new Date();
-        //Ngày kết thúc thông tin khấu hao là ngày hôm nay
-        depreciation.setToDate(endDate);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        //Ngày bắt đầu tính khấu hao
-        int fMonth = LocalDate.of(depreciation.getFromDate().getYear()+1900,depreciation.getFromDate().getMonth()+1,01).lengthOfMonth();
+        //Tạo thông tin 4 ngày cơ bản
+        //Ngày tạo thông tin khấu hao
+        Date fDate = depreciation.getFromDate();
+        //Ngày kết thúc dự kiến khấu hao
+        Date eDate = depreciation.getExpDate();
+        //Ngày hôm nay
+        Date today = new Date();
+        //Ngày đầu tháng này
+        Date sDate = dateFormat.parse((today.getYear()+1900)+"-"+(today.getMonth()+1)+"-01");
         //Số ngày trong tháng này
-        int eMonth = LocalDate.of(endDate.getYear()+1900,endDate.getMonth()+1,01).lengthOfMonth();
-        //Ngày kết thúc khấu hao dự kiến
-        int exMonth = LocalDate.of(depreciation.getExpDate().getYear()+1900,depreciation.getExpDate().getMonth()+1,01).lengthOfMonth();
-        //Ngày đầu tháng
-        Date sDate = dateFormat.parse((endDate.getYear()+1900)+"-"+(endDate.getMonth()+1)+"-01");
-        int amountMonth = 0;
-        //Tính lại giá trị đã khấu hao
-        Double value = depreciationHistoryService.totalValueDepreciationByDepreciationId(depreciation.getId(),endDate.getMonth()+1,endDate.getYear()+1900);
-        //Giá trị đã khấu hao
-        if(value ==null)
-            value = 0.0;
+        int dayInMonth = LocalDate.of(today.getYear()+1900,today.getMonth()+1,01).lengthOfMonth();
+        //Số ngày trong tháng bắt đầu
+        int dayInFMonth = LocalDate.of(fDate.getYear()+1900,fDate.getMonth()+1,01).lengthOfMonth();
+        //Số ngày trong tháng kết thúc
+        int dayInEMonth = LocalDate.of(eDate.getYear()+1900,eDate.getMonth()+1,01).lengthOfMonth();
+        //Tính toán giá trị khấu hao trước
+        Double valuePrev = depreciationHistoryService.totalValueDepreciationByDepreciationId(depreciation.getId(),today.getMonth()+1,today.getYear()+1900);
+        valuePrev = valuePrev == null ? 0.0 : valuePrev;
         //Giá trị khấu hao trong tháng này
         Double valueInMonth = 0.0;
-        //Đã kết thúc khấu hao
-        if(depreciation.getExpDate().before(sDate)){
+        //Các trường hợp và cách lưu lại lịch sử khấu hao
+        int amountMonth = 0;
+        // - TH1: TS đã kết thúc khấu hao
+        if(eDate.before(sDate)){
             valueInMonth= 0.0;
-            amountMonth = (depreciation.getFromDate().getDate() >= fMonth/2 ? 0 : 1)
-                    + (11 - depreciation.getFromDate().getMonth())
-                    + (depreciation.getExpDate().getYear() - depreciation.getFromDate().getYear() -1)*12
-                    + (depreciation.getExpDate().getMonth())
-                    + (depreciation.getExpDate().getDate() > exMonth/2 ? 1: 0);
+            amountMonth = countMonth(fDate,eDate,dayInFMonth,dayInEMonth);
         }
         //Ngày đầu tháng < ngày kết thúc khấu hao
-        else if(depreciation.getExpDate().after(sDate)){
-            if(depreciation.getFromDate().after(sDate)&&depreciation.getToDate().before(depreciation.getExpDate())){
-                valueInMonth = (Double.valueOf(depreciation.getFromDate().getDate() - depreciation.getToDate().getDate()+1)/eMonth) * depreciation.getValuePerMonth();
-                amountMonth = (depreciation.getFromDate().getDate() >= fMonth/2 ? 0 : 1)
-                        + (11 - depreciation.getFromDate().getMonth())
-                        + (depreciation.getExpDate().getYear() - depreciation.getFromDate().getYear() -1)*12
-                        + (depreciation.getExpDate().getMonth())
-                        + (depreciation.getExpDate().getDate() > exMonth/2 ? 1: 0);
+        else if(eDate.after(sDate)){
+            //Ngày đầu tháng < ngày bắt đầu < ngày hôm nay < ngày kết thúc
+            if(fDate.after(sDate)&&today.before(eDate)){
+                valueInMonth = (Double.valueOf(today.getDate() - fDate.getDate()+1)/dayInMonth) * depreciation.getValuePerMonth();
+                amountMonth = countMonth(fDate,today,dayInFMonth,dayInMonth);
+            }//Ngày đầu tháng < ngày bắt đầu < ngày kết thúc < ngày hôm nay
+            else if(sDate.before(fDate)&&eDate.before(today)){
+                valueInMonth = (Double.valueOf(eDate.getDate() - fDate.getDate()+1)/dayInMonth) * depreciation.getValuePerMonth();
+                amountMonth = 0;
+            }//Ngày bắt đầu < ngày đầu tháng < ngày hôm nay < ngày kết thúc
+            else if(fDate.before(sDate)&&today.before(eDate)){
+                valueInMonth = (Double.valueOf(today.getDate() - sDate.getDate()+1)/dayInMonth) * depreciation.getValuePerMonth();
+                amountMonth = countMonth(fDate,today,dayInFMonth,dayInMonth);
+            }//Ngày bắt đầu < ngày đầu tháng < ngày kết thúc < ngày hôm nay
+            else if(fDate.before(sDate)&&eDate.before(today)){
+                valueInMonth = (Double.valueOf(eDate.getDate() - sDate.getDate()+1)/dayInMonth) * depreciation.getValuePerMonth();
+                amountMonth = countMonth(fDate,eDate,dayInFMonth,dayInEMonth);
             }
-            else if(depreciation.getFromDate().after(sDate)&&depreciation.getToDate().after(depreciation.getExpDate())){
-                valueInMonth = (Double.valueOf(depreciation.getExpDate().getDate() - depreciation.getFromDate().getDate()+1)/eMonth) * depreciation.getValuePerMonth();
-                amountMonth = (depreciation.getFromDate().getDate() >= fMonth/2 ? 0 : 1)
-                        + (11 - depreciation.getFromDate().getMonth())
-                        + (depreciation.getExpDate().getYear() - depreciation.getFromDate().getYear() -1)*12
-                        + (depreciation.getExpDate().getMonth())
-                        + (depreciation.getExpDate().getDate() > exMonth/2 ? 1: 0);
-
-            }else{
-                valueInMonth = (Double.valueOf(depreciation.getExpDate().getDate() - sDate.getDate()+1)/eMonth) * depreciation.getValuePerMonth();
-                amountMonth = (depreciation.getFromDate().getDate() >= fMonth/2 ? 0 : 1)
-                        + (11 - depreciation.getFromDate().getMonth())
-                        + (depreciation.getExpDate().getYear() - depreciation.getFromDate().getYear() -1)*12
-                        + (depreciation.getExpDate().getMonth())
-                        + (depreciation.getExpDate().getDate() > exMonth/2 ? 1: 0);
-            }
-        }
-        //Chưa kết thúc khấu hao
-        else if(depreciation.getExpDate().after(endDate)){
-            System.out.println("?3");
-            System.out.println(sDate);
-            System.out.println(depreciation.getExpDate());
-            System.out.println(depreciation.getFromDate());
-            System.out.println(endDate);
-            valueInMonth = (Double.valueOf(endDate.getDate() - sDate.getDate()+1)/eMonth) * depreciation.getValuePerMonth();
-            amountMonth = (depreciation.getFromDate().getDate() >= fMonth/2 ? 0 : 1)
-                    + (11 - depreciation.getFromDate().getMonth())
-                    + (endDate.getYear() - depreciation.getFromDate().getYear() -1)*12
-                    + (endDate.getMonth())
-                    + (endDate.getDate() > eMonth/2 ? 1: 0);
         }
         depreciation.setAmountMonth(amountMonth);
-        depreciation.setValueDepreciation(value+valueInMonth);
+        depreciation.setValueDepreciation(valuePrev+valueInMonth);
         depreciation.setStatus(2);
+        if(today.after(eDate))
+            depreciation.setToDate(eDate);
+        else
+            depreciation.setToDate(today);
         //Lưu thông tin lịch sử khấu hao
         DepreciationHistory depreciationHistory = new DepreciationHistory();
         depreciationHistory.setCreateAt(new Date());
-        depreciationHistory.setMonth(endDate.getMonth()+1);
-        depreciationHistory.setYear(endDate.getYear()+1900);
+        depreciationHistory.setMonth(today.getMonth()+1);
+        depreciationHistory.setYear(today.getYear()+1900);
         depreciationHistory.setDepreciation(depreciation);
         depreciationHistory.setAssetId(depreciation.getAssetId());
         depreciationHistory.setAssetTypeId(depreciation.getAssetTypeId());
         depreciationHistory.setValue(valueInMonth);
         depreciationHistoryService.saveDepreciationHistory(depreciationHistory);
         return depreciation;
+    }
+
+    public int countMonth(Date sDate, Date eDate,int sMonth, int eMonth){
+        int temp = (sDate.getDate() >= sMonth/2 ? 0 : 1)
+                + (11 - sDate.getMonth())
+                + (eDate.getYear() - sDate.getYear() -1)*12
+                + (eDate.getMonth())
+                + (eDate.getDate() > eMonth/2 ? 1: 0);
+        return temp;
     }
 
 }

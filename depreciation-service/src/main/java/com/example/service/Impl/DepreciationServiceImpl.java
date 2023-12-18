@@ -81,7 +81,7 @@ public class DepreciationServiceImpl implements DepreciationService {
         return depreciationRepository.findLastDepreciationByAssetId(assetId);
     }
 
-    @KafkaListener(topics = "asset-add-user-event-topic",groupId = "depreciation-event-group")
+    @KafkaListener(topics = "asset-add-user-event-topic",groupId = "asset-event-group")
     public void processAssetEvents(AssetEvent assetEvent) throws ParseException {
         AssetEvent resp =  new AssetEvent();
         if(assetEvent.getEventType().equals("AddUser")) {
@@ -93,17 +93,19 @@ public class DepreciationServiceImpl implements DepreciationService {
                 resp.getAssetResponse().setDeptId(assetEvent.getAssetResponse().getDeptId());
                 kafkaTemplate.send("asset-rollback-event-topic", resp);
             }
-            Object object = findLDateAndSumValueByAssetId(assetEvent.getAssetResponse().getAssetId());
-            DepreciationRequest depreciationRequest = new DepreciationRequest(assetEvent.getAssetResponse().getAssetId(), assetEvent.getAssetResponse().getUserId(), assetEvent.getAssetResponse().getDeptId());
-            Depreciation depreciationRecords = depreciationMapping.requestToEntity(depreciationRequest, object);
-            Depreciation depreciationAdded = createDepreciation(depreciationRecords);
-            //Thêm lịch sử khấu hao nếu mất tháng
-            depreciationHistoryMapping.addDepreciationHistory(depreciationAdded);
+            else {
+                Object object = findLDateAndSumValueByAssetId(assetEvent.getAssetResponse().getAssetId());
+                DepreciationRequest depreciationRequest = new DepreciationRequest(assetEvent.getAssetResponse().getAssetId(), assetEvent.getAssetResponse().getUserId(), assetEvent.getAssetResponse().getDeptId());
+                Depreciation depreciationRecords = depreciationMapping.requestToEntity(depreciationRequest, object);
+                Depreciation depreciationAdded = createDepreciation(depreciationRecords);
+                //Thêm lịch sử khấu hao nếu mất tháng
+                depreciationHistoryMapping.addDepreciationHistory(depreciationAdded);
+            }
         }
     }
         //API Thực hiện tính toán và ngưng khấu hao
 
-    @KafkaListener(topics = "asset-recall-event-topic",groupId = "depreciation-event-group")
+    @KafkaListener(topics = "asset-recall-event-topic",groupId = "asset-event-group")
     public void processAssetRecallEvents(AssetEvent assetEvent) throws ParseException {
         AssetEvent resp =  new AssetEvent();
         if(assetEvent.getEventType().equals("RecallAsset")) {
@@ -113,10 +115,13 @@ public class DepreciationServiceImpl implements DepreciationService {
                 resp.getAssetResponse().setAssetId(assetEvent.getAssetResponse().getAssetId());
                 resp.getAssetResponse().setUserId(assetEvent.getAssetResponse().getUserId());
                 resp.getAssetResponse().setDeptId(assetEvent.getAssetResponse().getDeptId());
-                kafkaTemplate.send("asset-event-topic", resp);
+                kafkaTemplate.send("asset-rollback-event-topic", resp);
             }
-            Depreciation depreciationRecords = depreciationMapping.updateDepreciation(depreciation);
-            saveDepreciation(depreciationRecords);
+            else {
+                Depreciation depreciationRecords = depreciationMapping.updateDepreciation(depreciation);
+                saveDepreciation(depreciationRecords);
+            }
+
         }
     }
 }

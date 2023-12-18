@@ -126,6 +126,7 @@ public class AssetMapping {
         assetDelivery.setDeptId(Long.valueOf(userResponse.getDept().getId()));
         assetDelivery.setUserId(Long.valueOf(userResponse.getId()));
         assetDelivery.setCreateAt(new Date());
+        assetDelivery.setActive(true);
         assetDeliveryService.createDelivery(assetDelivery);
         return asset;
     }
@@ -142,9 +143,6 @@ public class AssetMapping {
         assetDelivery.setUserId(Long.valueOf(userResponse.getId()));
         assetDelivery.setCreateAt(new Date());
         assetDeliveryService.createDelivery(assetDelivery);
-        asset.setAssetStatus(Long.valueOf(2));
-        asset.setUserUsedId(null);
-        asset.setDeptUsedId(null);
         return asset;
     }
     public Double calculatorDepreciation(Asset asset, String fromDate, String toDate, Double value, String lastDate) throws ParseException {

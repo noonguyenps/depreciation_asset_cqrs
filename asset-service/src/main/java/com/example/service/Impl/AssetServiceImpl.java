@@ -96,7 +96,6 @@ public class AssetServiceImpl implements AssetService {
         String[] parts = name.split(" ");
         keyword+=String.join("|",parts);
         keyword+=")%";
-        System.out.println(keyword);
         return assetRepository.findByKeyword(keyword,pageable);
     }
 
@@ -108,7 +107,6 @@ public class AssetServiceImpl implements AssetService {
         String[] parts = name.split(" ");
         keyword+=String.join("|",parts);
         keyword+=")%";
-        System.out.println(keyword);
         return assetRepository.filterAssets(keyword,deptId,userId, assetType,fromDate,toDate,status,pageable);
     }
 
@@ -155,6 +153,9 @@ public class AssetServiceImpl implements AssetService {
         event.getAssetResponse().setUserId(asset.getUserUsedId());
         event.getAssetResponse().setDeptId(asset.getDeptUsedId());
         kafkaTemplate.send("asset-recall-event-topic", event);
+        asset.setUserUsedId(null);
+        asset.setDeptUsedId(null);
+        asset.setAssetStatus(Long.valueOf(0));
         if(assetTemp != null)
             return true;
         return false;
@@ -176,7 +177,7 @@ public class AssetServiceImpl implements AssetService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
         return assetRepository.findByAssetType(assetTypeId,pageable);
     }
-    @KafkaListener(topics = "asset-rollback-event-topic",groupId = "depreciation-event-group")
+    @KafkaListener(topics = "asset-rollback-event-topic",groupId = "asset-event-group")
     public void processRollbackEvents(AssetEvent event) {
         if(event.getEventType().equals("RollbackAddUser")){
             //Rollback AssetDelivery
