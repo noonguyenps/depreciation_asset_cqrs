@@ -10,7 +10,6 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class AssetServiceClient {
     @Autowired
-//    @LoadBalanced
     private RestTemplate template;
 
     public UserResponse fetchUser(Long userId) {

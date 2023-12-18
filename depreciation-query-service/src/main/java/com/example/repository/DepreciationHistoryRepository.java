@@ -18,7 +18,7 @@ public interface DepreciationHistoryRepository extends JpaRepository<Depreciatio
     List<Object> getDepreciationByAllDept(int year);
     @Query(value = "SELECT dept_id, depreciation_history_query.asset_type_id, month, year, sum(value) as value \n" +
             "FROM depreciation_history_query, depreciation_query\n" +
-            "WHERE dept_id in ?1 AND year = ?2 AND depreciation_history_query.depreciation_id = depreciation.id\n" +
+            "WHERE dept_id in ?1 AND year = ?2 AND depreciation_history_query.depreciation_id = depreciation_query.id\n" +
             "GROUP BY dept_id, depreciation_history_query.asset_type_id, month, year",nativeQuery = true)
     List<Object> getDepreciationByDeptIds(List<Long> deptIds,int year);
     @Query(value = "SELECT depreciation_id , SUM(value)\n" +
