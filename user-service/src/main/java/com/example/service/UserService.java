@@ -13,4 +13,5 @@ public interface UserService {
     List<User> findAllUser(Pageable pageable);
     User findUserById(Long id);
     long countUser();
+    List<User> findUserByDept(Long deptId);
 }

@@ -35,4 +35,8 @@ public class DepartmentController {
     public ResponseEntity getDepartmentByIdV1(@PathVariable Long id){
         return new ResponseEntity(departmentService.findDepartmentById(id),HttpStatus.OK);
     }
+    @GetMapping("/getUsers/{id}")
+    public ResponseEntity getUserInDept(@PathVariable Long id){
+        return new ResponseEntity(departmentService.findDepartmentById(id).getListUser(),HttpStatus.OK);
+    }
 }

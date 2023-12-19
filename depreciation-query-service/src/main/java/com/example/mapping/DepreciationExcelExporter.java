@@ -54,7 +54,26 @@ public class DepreciationExcelExporter {
         cellStyle.setFont(font);
         cellStyle.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex());
         cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        cellStyle.setBorderBottom(BorderStyle.THIN);
+        return cellStyle;
+    }
+
+    private static CellStyle createStyleDept(Sheet sheet) {
+        // Create font
+        Font font = sheet.getWorkbook().createFont();
+        font.setColor(IndexedColors.RED.getIndex()); // text color
+        // Create CellStyle
+        CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
+        cellStyle.setFont(font);
+        return cellStyle;
+    }
+
+    private static CellStyle createStyleType(Sheet sheet) {
+        // Create font
+        Font font = sheet.getWorkbook().createFont();
+        font.setColor(IndexedColors.BLACK.getIndex()); // text color
+        // Create CellStyle
+        CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
+        cellStyle.setFont(font);
         return cellStyle;
     }
 
@@ -153,7 +172,8 @@ public class DepreciationExcelExporter {
         int i = 1;
         for(DepreciationDeptResponse response : list){
             Row row = sheet.createRow(i);
-            createCell(row, response.getDeptName(), response.getDepreciationPrev(),
+            CellStyle style = createStyleDept(sheet);
+            createCell(style,row, response.getDeptName(), response.getDepreciationPrev(),
                     response.getMonths().get("1")!=null?response.getMonths().get("1"):0.0,
                     response.getMonths().get("2")!=null?response.getMonths().get("2"):0.0,
                     response.getMonths().get("3")!=null?response.getMonths().get("3"):0.0,
@@ -174,7 +194,8 @@ public class DepreciationExcelExporter {
             i++;
             for(AssetType assetType : response.getAssetTypes()){
                 Row childernRow = sheet.createRow(i);
-                createCell(childernRow, assetType.getTypeName(), assetType.getDepreciationPrev(),
+                CellStyle styleType = createStyleType(sheet);
+                createCell(styleType,childernRow, assetType.getTypeName(), assetType.getDepreciationPrev(),
                         assetType.getMonths().get("1")!=null?assetType.getMonths().get("1"):0.0,
                         assetType.getMonths().get("2")!=null?assetType.getMonths().get("2"):0.0,
                         assetType.getMonths().get("3")!=null?assetType.getMonths().get("3"):0.0,
@@ -197,19 +218,14 @@ public class DepreciationExcelExporter {
         }
     }
 
-    private void createCell(Row row, String col0,Double col1,Double col2, Double col3, Double col4, Double col5, Double col6,
+    private void createCell(CellStyle cellStyleFormatNumber,Row row, String col0,Double col1,Double col2, Double col3, Double col4, Double col5, Double col6,
                             Double col7, Double col8, Double col9, Double col10, Double col11, Double col12, Double col13, Double col14,
                             Double col15, Double col16, Double col17, Double col18) {
-
-        CellStyle cellStyleFormatNumber = null;
-        if (cellStyleFormatNumber == null) {
-            short format = (short)BuiltinFormats.getBuiltinFormat("#,##0");
-            cellStyleFormatNumber = workbook.createCellStyle();
-            cellStyleFormatNumber.setDataFormat(format);
-        }
         Cell cell = row.createCell(COLUMN_INDEX_TYPE);
         cell.setCellValue(col0);
-
+        cell.setCellStyle(cellStyleFormatNumber);
+        short format = (short)BuiltinFormats.getBuiltinFormat("#,##0");
+        cellStyleFormatNumber.setDataFormat(format);
         cell = row.createCell(COLUMN_INDEX_PREV);
         cell.setCellValue(col1);
         cell.setCellStyle(cellStyleFormatNumber);
@@ -291,12 +307,9 @@ public class DepreciationExcelExporter {
         sheet = workbook.createSheet("Depreciation");
         writeHeader(sheet,0);
         writeData(list,sheet);
-
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         workbook.close();
-
         outputStream.close();
-
     }
 }
