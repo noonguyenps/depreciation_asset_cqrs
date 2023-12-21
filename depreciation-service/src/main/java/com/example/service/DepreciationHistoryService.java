@@ -9,4 +9,5 @@ public interface DepreciationHistoryService {
     boolean saveDepreciationHistory(DepreciationHistory depreciationHistory);
     Double totalValueDepreciationByAssetId(Long assetId);
     Double totalValueDepreciationByDepreciationId(Long depreciationId, int month, int year);
+    Double totalValueDepreciationByAssetId(Long assetId, int month, int year);
 }

@@ -35,4 +35,9 @@ public class DepreciationHistoryServiceImpl implements DepreciationHistoryServic
         return depreciationHistoryRepository.totalValueDepreciationByDepreciationId(depreciationId, month, year);
     }
 
+    @Override
+    public Double totalValueDepreciationByAssetId(Long assetId, int month, int year) {
+        return depreciationHistoryRepository.totalValueDepreciationByAssetId(assetId, month, year);
+    }
+
 }

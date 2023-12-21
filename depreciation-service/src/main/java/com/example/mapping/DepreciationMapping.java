@@ -54,6 +54,7 @@ public class DepreciationMapping {
     }
 
     public Depreciation updateDepreciation(Depreciation depreciation) throws ParseException {
+        AssetResponse assetResponse = depreciationServiceClient.fetchAsset(depreciation.getAssetId());
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         //Tạo thông tin 4 ngày cơ bản
         //Ngày tạo thông tin khấu hao
@@ -70,11 +71,15 @@ public class DepreciationMapping {
         int dayInFMonth = LocalDate.of(fDate.getYear()+1900,fDate.getMonth()+1,01).lengthOfMonth();
         //Số ngày trong tháng kết thúc
         int dayInEMonth = LocalDate.of(eDate.getYear()+1900,eDate.getMonth()+1,01).lengthOfMonth();
-        //Tính toán giá trị khấu hao trước
+        //Tính toán giá trị khấu hao lũy kế
         Double valuePrev = depreciationHistoryService.totalValueDepreciationByDepreciationId(depreciation.getId(),today.getMonth()+1,today.getYear()+1900);
+        Double valueAssetPrev = depreciationHistoryService.totalValueDepreciationByAssetId(depreciation.getId(),today.getMonth()+1,today.getYear()+1900);
         valuePrev = valuePrev == null ? 0.0 : valuePrev;
+        valueAssetPrev = valueAssetPrev == null ? 0.0 : valueAssetPrev;
         //Giá trị khấu hao trong tháng này
         Double valueInMonth = 0.0;
+        //Giá trị còn lại của tài sản
+        Double countValue = assetResponse.getPrice() - valueAssetPrev;
         //Các trường hợp và cách lưu lại lịch sử khấu hao
         int amountMonth = 0;
         // - TH1: TS đã kết thúc khấu hao
@@ -88,18 +93,22 @@ public class DepreciationMapping {
             if(fDate.after(sDate)&&today.before(eDate)){
                 valueInMonth = (Double.valueOf(today.getDate() - fDate.getDate()+1)/dayInMonth) * depreciation.getValuePerMonth();
                 amountMonth = countMonth(fDate,today,dayInFMonth,dayInMonth);
+                if(valueInMonth > countValue) valueInMonth = countValue;
             }//Ngày đầu tháng < ngày bắt đầu < ngày kết thúc < ngày hôm nay
             else if(sDate.before(fDate)&&eDate.before(today)){
                 valueInMonth = (Double.valueOf(eDate.getDate() - fDate.getDate()+1)/dayInMonth) * depreciation.getValuePerMonth();
                 amountMonth = 0;
+                if(valueInMonth > countValue) valueInMonth = countValue;
             }//Ngày bắt đầu < ngày đầu tháng < ngày hôm nay < ngày kết thúc
             else if(fDate.before(sDate)&&today.before(eDate)){
                 valueInMonth = (Double.valueOf(today.getDate() - sDate.getDate()+1)/dayInMonth) * depreciation.getValuePerMonth();
                 amountMonth = countMonth(fDate,today,dayInFMonth,dayInMonth);
+                if(valueInMonth > countValue) valueInMonth = countValue;
             }//Ngày bắt đầu < ngày đầu tháng < ngày kết thúc < ngày hôm nay
             else if(fDate.before(sDate)&&eDate.before(today)){
                 valueInMonth = (Double.valueOf(eDate.getDate() - sDate.getDate()+1)/dayInMonth) * depreciation.getValuePerMonth();
                 amountMonth = countMonth(fDate,eDate,dayInFMonth,dayInEMonth);
+                if(valueInMonth > countValue) valueInMonth = countValue;
             }
         }
         depreciation.setAmountMonth(amountMonth);
