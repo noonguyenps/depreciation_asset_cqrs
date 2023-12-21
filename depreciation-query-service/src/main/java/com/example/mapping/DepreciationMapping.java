@@ -54,7 +54,11 @@ public class DepreciationMapping {
                     //Khấu hao đã kết thúc
                     valuePre = 0.0;
                     amountDate = 0;
-                }else {
+                }else if(depreciation.getFromDate().after(sDate)){
+                    //Khấu hao từ ngày nhập đến hôm nay
+                    amountDate = today.getDate() - depreciation.getFromDate().getDate() + 1;
+                    valuePre = (Double.valueOf(amountDate)/localDate.lengthOfMonth())*depreciation.getValuePerMonth();
+                }else{
                     //Khấu hao vẫn chưa hết
                     amountDate = today.getDate()-sDate.getDate()+1;
                     valuePre = (Double.valueOf(amountDate)/localDate.lengthOfMonth())*depreciation.getValuePerMonth();
