@@ -142,6 +142,7 @@ public class AssetMapping {
         assetDelivery.setDeptId(Long.valueOf(userResponse.getDept().getId()));
         assetDelivery.setUserId(Long.valueOf(userResponse.getId()));
         assetDelivery.setCreateAt(new Date());
+        assetDelivery.setActive(true);
         assetDeliveryService.createDelivery(assetDelivery);
         return asset;
     }
