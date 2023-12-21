@@ -1,4 +1,4 @@
-package com.example.config;
+package com.example.discoveryService.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +15,11 @@ public class CorsConfig {
                 registry.addMapping("/**")
                         .allowedMethods("GET","POST","DELETE","PUT")
                         .allowedHeaders("*")
+                        .allowedOriginPatterns("*")
                         .allowedOrigins("http://localhost:3000/","http://localhost:8080/"
                         ,"http://localhost:3001/","http://localhost:3002/")
                         .allowCredentials(true)
-                        .maxAge(3600);
+                        .maxAge(36000);
             }
         };
     }

@@ -103,8 +103,7 @@ public class DepreciationServiceImpl implements DepreciationService {
             }
         }
     }
-        //API Thực hiện tính toán và ngưng khấu hao
-
+    //API Thực hiện tính toán và ngưng khấu hao
     @KafkaListener(topics = "asset-recall-event-topic",groupId = "asset-event-group")
     public void processAssetRecallEvents(AssetEvent assetEvent) throws ParseException {
         AssetEvent resp =  new AssetEvent();
